@@ -4,15 +4,21 @@
 
 ---
 
+### Dashboard
+
+https://dataviz-pucrs.streamlit.app
+
 ### Project structure
 
 ```mermaid
 flowchart LR
-        
+    
+    input_data
     preprocess
-    data
+    curated_data
     dashboard
 
-    preprocess --> data
-    data --> dashboard
+    input_data --> preprocess
+    preprocess --> curated_data
+    curated_data --> dashboard
 ```
