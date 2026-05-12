@@ -1,0 +1,15 @@
+[project]
+name = "poors-bread"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ruff>=0.15.12",
+    "streamlit>=1.57.0",
+]
+
+[ruff]
+indent-style = "space"
+indent-width = 4
+line-length = 120
