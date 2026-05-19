@@ -34,29 +34,57 @@ def clean_lem_df(df: pd.DataFrame, year: str, filename: str) -> pd.DataFrame:
         "EDUCAÇÃO": "educacao",
     }
 
+    # Categories that have sub-levels (matriculados/aguardando vaga)
+    parent_types = ["ENSINO INFANTIL", "ENSINO REGULAR", "ENSINO EJA", "SCFV"]
+    sub_types = ["MATRICULADOS", "AGUARDANDO VAGA"]
+
     data = []
     current_area = None
+    current_parent_tipo = None
 
-    # Tracks current "Area" to label subsequent "Types"
+    # Tracks current "Area" and "Parent Tipo" to label sub-categories
     for _, row in df.iterrows():
         first_col_val = str(row[0]).strip() if pd.notna(row[0]) else ""
         first_col_upper = first_col_val.upper()
 
         # Update active area if a header row is detected
+        new_area_found = False
         for keyword, area_name in area_mapping.items():
             if keyword in first_col_upper:
                 current_area = area_name
+                current_parent_tipo = None  # Reset parent on area change
+                new_area_found = True
                 break
 
         # Validation: skip empty rows, month headers, or the area header itself
-        if not first_col_val or first_col_upper in months_list:
+        if not first_col_val or first_col_upper in months_list or new_area_found:
             continue
-        if any(keyword in first_col_upper for keyword in area_mapping.keys()):
-            continue
+
         if current_area is None:
             continue
 
+        # Logic for status (matriculados, aguardando vaga, none)
+        status = "none"
         tipo = first_col_val
+
+        if first_col_upper in sub_types:
+            if current_parent_tipo:
+                tipo = current_parent_tipo
+            status = first_col_val.lower()
+        else:
+            # Check if this row is a parent category header
+            is_parent = False
+            for p in parent_types:
+                if p in first_col_upper:
+                    current_parent_tipo = first_col_val
+                    is_parent = True
+                    break
+            
+            # Skip the header row itself as it contains no data
+            if is_parent:
+                continue
+                
+            current_parent_tipo = None
 
         # Converts 'X', empty strings, and commas to valid floats
         for col_idx, month_name in month_cols.items():
@@ -75,6 +103,7 @@ def clean_lem_df(df: pd.DataFrame, year: str, filename: str) -> pd.DataFrame:
             data.append(
                 {
                     "tipo": tipo,
+                    "status": status,
                     "area": current_area,
                     "mes": month_name,
                     "ano": int(year),
@@ -111,12 +140,12 @@ def load_all_data(data_dir: Path) -> pd.DataFrame:
             print(f"Error loading {file.name}: {e}")
 
     if not all_dfs:
-        return pd.DataFrame(columns=["tipo", "area", "mes", "ano", "valor", "arquivo"])
+        return pd.DataFrame(columns=["tipo", "status", "area", "mes", "ano", "valor", "arquivo"])
 
     combined = pd.concat(all_dfs, ignore_index=True)
 
     # Ensure columns are in the requested order
-    cols_order = ["tipo", "area", "mes", "ano", "valor", "arquivo"]
+    cols_order = ["tipo", "status", "area", "mes", "ano", "valor", "arquivo"]
     combined = combined[cols_order]
 
     return combined
