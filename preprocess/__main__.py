@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 
-from converter import convert_xlsx_to_csv
-from processor import process
+from preprocess.converter import convert_xlsx_to_csv
+from preprocess.processor import process
 
 __PARENT = Path(__file__).parent.parent
 __INPUT_PATH = f"{__PARENT}/data/input/LEM"
