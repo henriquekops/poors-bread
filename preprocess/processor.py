@@ -35,7 +35,7 @@ def clean_lem_df(df: pd.DataFrame, year: str, filename: str) -> pd.DataFrame:
     }
 
     # Categories that have sub-levels (matriculados/aguardando vaga)
-    parent_types = ["ENSINO INFANTIL", "ENSINO REGULAR", "ENSINO EJA", "SCFV"]
+    parent_types = ["ENSINO INFANTIL", "ENSINO FUNDAMENTAL", "ENSINO REGULAR", "ENSINO EJA", "SCFV", "SCPV"]
     sub_types = ["MATRICULADOS", "AGUARDANDO VAGA"]
 
     data = []
@@ -47,10 +47,10 @@ def clean_lem_df(df: pd.DataFrame, year: str, filename: str) -> pd.DataFrame:
         first_col_val = str(row[0]).strip() if pd.notna(row[0]) else ""
         first_col_upper = first_col_val.upper()
 
-        # Update active area if a header row is detected
+        # Update active area if a header row is detected (exact match to avoid sub-category confusion)
         new_area_found = False
         for keyword, area_name in area_mapping.items():
-            if keyword in first_col_upper:
+            if keyword == first_col_upper:
                 current_area = area_name
                 current_parent_tipo = None  # Reset parent on area change
                 new_area_found = True
@@ -83,7 +83,12 @@ def clean_lem_df(df: pd.DataFrame, year: str, filename: str) -> pd.DataFrame:
             # Skip the header row itself as it contains no data
             if is_parent:
                 continue
-                
+            
+            # For 'educacao' area, we only accept rows that are sub-types (matriculados/aguardando vaga)
+            # This filters out 'Outros' or incorrectly assigned rows
+            if current_area == "educacao":
+                continue
+
             current_parent_tipo = None
 
         # Converts 'X', empty strings, and commas to valid floats
