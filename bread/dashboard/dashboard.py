@@ -1,7 +1,6 @@
 from pathlib import Path
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
 
 # 1. Page Configuration
@@ -170,7 +169,7 @@ def customize_fig(fig, hovermode="x unified"):
     return fig
 
 # 3. Data Loading
-output_path = f"{Path(__file__).parent.parent}/data/output"
+output_path = f"{Path(__file__).parent.parent.parent}/data/output"
 df = pd.read_csv(f"{output_path}/processed.csv")
 
 # Standard month ordering

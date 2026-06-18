@@ -30,13 +30,21 @@ flowchart LR
 ### Run csv converter
 
 ```bash
-python preprocess --convert 
+python -m bread --convert 
 ```
 
 ---
 
-### Run streamlit locally
+### Run pre-process
 
 ```bash
-streamlit run dashboard/main.py
+python -m bread --process 
+```
+
+---
+
+### Run streamlit
+
+```bash
+python -m bread --dash
 ```
