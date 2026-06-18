@@ -1,0 +1,183 @@
+
+2
+
+Automatic Zoom
+Relat  ́orio T ́ecnico 1
+Dashboard P  ̃ao dos Pobres
+Gustavo Losch1, Henrique Mayer1, Henrique Kops1
+1 Escola Polit ́ecnica – Pont ́ıficia Universidade Cat  ́olica do Rio Grande do Sul (PUCRS)
+{g.losch, h.ramos, h.kops}@edu.pucrs.br
+1. Introduc ̧  ̃ao
+A Fundac ̧  ̃ao P ̃ao dos Pobres desempenha um papel social fundamental, gerando um re-
+lat  ́orio mensal com dados operacionais por meio do seu Levantamento Estat ́ıstico Men-
+sal (LEM). Contudo, o armazenamento hist  ́orico dessas informac ̧  ̃oes ocorria de maneira
+descentralizada e n ̃ao padronizada em diversas planilhas eletr ˆonicas. Essa fragmentac ̧  ̃ao
+estrutural imp  ̃oe barreiras significativas para a extrac ̧  ̃ao de insights, a an ́alise cont ́ınua de
+s ́eries temporais e, consequentemente, para a tomada de decis  ̃oes baseada em dados por
+parte dos gestores.
+Para solucionar esse problema, este projeto tem como objetivo desenvolver um
+dashboard para centralizar e analisar as m ́etricas operacionais da instituic ̧  ̃ao. Este
+relat  ́orio documenta a estruturac ̧  ̃ao dessa soluc ̧  ̃ao, detalhando desde a rotina de pr ́e-
+processamento at ́e a definic ̧  ̃ao das perguntas de neg  ́ocio e da arquitetura visual que ir ̃ao
+compor a ferramenta.
+2. Conjunto de Dados
+2.1. Caracter ́ısticas
+O conjunto de dados base para este projeto prov ́em do Levantamento Estat ́ıstico Mensal
+(LEM) da Fundac ̧  ̃ao P ̃ao dos Pobres, englobando o hist  ́orico de m  ́ultiplos anos dos pro-
+gramas de acolhimento, aprendizagem profissional e convivˆencia. Conforme destacado
+na introduc ̧  ̃ao, a disposic ̧  ̃ao original dessas informac ̧  ̃oes priorizava estritamente a leitura
+humana e a emiss ̃ao de relat  ́orios impressos, o que resultou em planilhas de formatac ̧  ̃ao
+complexa e pouco adequadas ao processamento computacional. Entre os principais de-
+safios estruturais encontrados est ̃ao a mescla de categorias fundamentais em uma mesma
+dimens ̃ao, como  ́areas de atuac ̧  ̃ao e tipos de atendimento, e a restric ̧  ̃ao na granularidade
+temporal da base: os registros encontram-se previamente agregados em totais mensais,
+limitando o acesso aos registros brutos n ̃ao agregados de cada atendimento.
+Al ́em da complexidade estrutural, a an ́alise inicial dos arquivos revelou problemas
+na padronizac ̧  ̃ao e na organizac ̧  ̃ao dos registros. Observou-se o uso frequente de marca-
+dores de texto, como a letra “X”, e de espac ̧os em branco no lugar do n  ́umero zero para
+indicar a ausˆencia de atendimentos. Outro desafio encontrado foi a desorganizac ̧  ̃ao no
+armazenamento, pois a pasta de dados continha diversos documentos parciais mistura-
+dos aos arquivos anuais definitivos, o que gerava risco de duplicac ̧  ̃ao ou de conflito de
+informac ̧  ̃oes.
+2.2. Pr ́e-Processamento
+Para solucionar as falhas estruturais e viabilizar o consumo das informac ̧  ̃oes por um dash-
+board, foi desenvolvida uma rotina automatizada em linguagem Python. O fluxo de
+pr ́e-processamento baseou-se no paradigma de Extrac ̧  ̃ao, Transformac ̧  ̃ao e Carga (ETL),
+convertendo planilhas eletr ˆonicas de formatac ̧  ̃ao complexa em um modelo tabular pa-
+dronizado e unidimensional. O conjunto de dados resultante foi estruturado a partir de
+seis colunas essenciais: (a) tipo, que define o servic ̧o ou indicador espec ́ıfico do atendi-
+mento; (b)  ́area, que designa o grupo de atuac ̧  ̃ao ao qual o tipo pertence (como Sa  ́ude
+ou Educac ̧  ̃ao); (c) status, que especifica a situac ̧  ̃ao do benefici ́ario (como “matriculados”
+ou “aguardando vaga”, aplic ́avel somente aos casos de ensino, permanecendo none para
+ ́areas que n ̃ao ensino); (d) mˆes e ano, que estabelecem o marco temporal de cada registro
+e (e) valor, que traz a quantificac ̧  ̃ao num ́erica exata dos atendimentos prestados. Todo
+processo de padronizac ̧  ̃ao foi organizado nas seguintes etapas de pr ́e-processamento:
+• Descoberta e filtragem de arquivos: O algoritmo varre o diret  ́orio
+data/input/LEM/ em busca de arquivos .xlsx. Durante a inspec ̧  ̃ao inicial,
+constatou-se a existˆencia de m  ́ultiplos arquivos referentes a um mesmo ano, que
+divergiam apenas na completude dos dados mensais. Assumiu-se a premissa de
+que as planilhas contendo valores nulos a partir de determinado mˆes consistiam em
+relat  ́orios de preenchimento parcial, enquanto aquelas com registros cont ́ınuos em
+todos os meses representavam os consolidados anuais. A partir dessa constatac ̧  ̃ao,
+os arquivos parciais foram rotulados manualmente com o sufixo partial. Para
+assegurar a integridade do conjunto de dados, a rotina foi programada para igno-
+rar intencionalmente qualquer documento com essa etiqueta, evitando a inclus ̃ao
+de informac ̧  ̃oes incompletas. Em paralelo, o ano de referˆencia  ́e extra ́ıdo dina-
+micamente da nomenclatura do arquivo (ex.: LEM 2023.xlsx) por meio de
+express  ̃oes regulares.
+• Identificac ̧  ̃ao da estrutura: Devido `a variac ̧  ̃ao na posic ̧  ̃ao dos cabec ̧alhos ao
+longo dos anos, a rotina percorre as linhas iniciais de cada planilha at ́e identifi-
+car uma que contenha ao menos trˆes meses v ́alidos (ex.: ”JAN”, ”FEV”, ”MAR”).
+Esse procedimento mapeia automaticamente quais colunas representam os dados
+mensais.
+• Extrac ̧  ̃ao da  ́area: O processamento das planilhas ocorre de forma sequencial,
+linha a linha, de modo que o algoritmo consiga registrar e manter o contexto
+das informac ̧  ̃oes lidas. Ao localizar palavras-chave na primeira coluna, o sistema
+atualiza automaticamente a  ́area de atuac ̧  ̃ao vigente (como Sa  ́ude ou Educac ̧  ̃ao).
+Esse m ́etodo sequencial tamb ́em permite mapear a dependˆencia entre os dados:
+ao identificar uma categoria principal (ex.: Ensino Infantil), o script vincula
+as linhas subsequentes como suas respectivas subcategorias (ex.: Matriculados,
+Aguardando Vaga), preservando a hierarquia estrutural original sem misturar as
+informac ̧  ̃oes.
+• Limpeza e normalizac ̧  ̃ao de valores: C ́elulas vazias ou marcadas com caracteres
+n ̃ao num ́ericos (”X”) s ̃ao convertidas para zero. Valores contendo v ́ırgulas como
+separadores decimais s ̃ao adequados para o padr ̃ao computacional com ponto.
+Ademais, os textos de  ́areas e meses s ̃ao padronizados para letras min  ́usculas e sem
+acentuac ̧  ̃ao, o que facilita o funcionamento dos filtros no painel de visualizac ̧  ̃ao.
+• Agregac ̧  ̃ao dos dados: Ap  ́os o processamento individual de cada planilha anual,
+as informac ̧  ̃oes s ̃ao integradas em uma base de dados  ́unica. Cada registro mensal
+passa a ocupar uma linha  ́unica, composta por sete colunas: tipo, status,  ́area, mˆes,
+ano, valor num ́erico e arquivo de origem. Essa unificac ̧  ̃ao elimina a fragmentac ̧  ̃ao
+dos dados e viabiliza a an ́alise de s ́eries temporais, permitindo a comparac ̧  ̃ao direta
+do desempenho e da demanda dos programas sociais ao longo de m  ́ultiplos anos.
+O resultado final desse fluxo  ́e a consolidac ̧  ̃ao de todos os anos no arquivo
+processed.csv, gerando uma tabela limpa e pronta para o consumo, como apresen-
+tado na Tabela 1. Essa etapa transformou dados anteriormente desorganizados em apro-
+ximadamente 1920 registros estruturados. Com as informac ̧  ̃oes agora categorizadas em
+quatro  ́areas principais de atendimento, Desdobramentos T ́ecnicos, Profissionalizac ̧  ̃ao,
+Sa  ́ude e Educac ̧  ̃ao, a base de dados viabiliza possibilita a criac ̧  ̃ao de an ́alises para o pro-
+jeto.
+Tabela 1. Exemplo de cinco registros aleat ́orios do conjunto de dados ap ́os o
+pr ́e-processamento.
+Categoria Status  ́Area Mˆes Ano Valor Arquivo
+Ensino infantil aguardando vaga educacao MAR 2021 4.0 LEM 2021.xlsx
+Saude mental none saude AGO 2022 0.0 LEM 2022 1.xlsx
+Internac ̧  ̃oes none saude OUT 2022 0.0 LEM 2022 1.xlsx
+Desligamentos none desdobramentos tecnicos OUT 2022 0.0 LEM 2022 1.xlsx
+Atendimentos individual none desdobramentos tecnicos MAI 2025 49.0 LEM 2025 3.xlsx
+2.3. An  ́alise Explorat  ́oria
+Com os dados processados, possu ́ımos oito colunas, sendo sete delas de dimens  ̃oes
+anal ́ıticas (metadados) e uma dedicada `a valores num ́ericos (valor). Ao analisar a co-
+luna de valor sem filtros relacionados `a  ́area, percebe-se uma quantidade expressiva de
+registros zerados (cerca de 43%) e uma distribuic ̧  ̃ao de densidade concentrada nos valo-
+res mais baixos, comportamento evidenciado pelo histograma apresentado na Figura 1.
+Entrando em cada uma das  ́areas de atendimento definidas, percebemos compor-
+tamentos estat ́ısticos distintos que explicam essa assimetria geral (Figura 2). A  ́area de
+Desdobramentos T ́ecnicos concentra o maior volume absoluto da amostra (1.020 regis-
+tros) e apresenta uma m ́edia de 10,71 atendimentos por registro. No entanto, possui um
+desvio padr ̃ao elevado (14,33), indicando uma alta variˆancia e dispers ̃ao nos dados men-
+sais.
+Em contraste, as  ́areas de Educac ̧  ̃ao e Profissionalizac ̧  ̃ao refletem a maior parte
+dos valores zerados do conjunto, cerca de 80% e 60% de seus valores zerados respecti-
+vamente. Ambas possuem medianas iguais a zero, o que mostra estatisticamente a alta
+incidˆencia de meses sem novos registros ou atendimentos computados nessas categorias,
+puxando suas m ́edias para baixo (1,03 e 4,55, respectivamente).
+Por fim, a  ́area de Sa  ́ude exibe o comportamento mais consistente. Embora seja a
+ ́area com o menor n  ́umero de linhas no conjunto de dados (180 registros), destaca-se por
+apresentar a maior m ́edia (13,16) e a maior mediana (12,0) entre todas as categorias. Isso
+sugere um fluxo de atendimento cont ́ınuo e regular, com a menor proporc ̧  ̃ao de valores
+zerados na prestac ̧  ̃ao do servic ̧o.
+3. Perguntas de Neg  ́ocio
+O ponto de partida para a definic ̧  ̃ao das visualizac ̧  ̃oes foi a identificac ̧  ̃ao das principais
+lacunas de conhecimento que a gest ̃ao da Fundac ̧  ̃ao enfrenta ao analisar os dados do LEM.
+0 20 40 60 80
+Valor
+0
+200
+400
+600
+800
+1000
+Frequência
+Distribuição de Valor (Histograma)Figura 1. Distribuic ̧  ̃ao geral e
+concentrac ̧  ̃ao da vari ́avel
+valor.0 10 20 30 40 50 60 70 80
+% de Zeros
+Desdobramentos Técnicos
+Educação
+Profissionalização
+Saúde
+Área
+Percentual de Valores Zerados por Área
+Figura 2. Percentual de valo-
+res zerados agrupados por
+ ́area.
+Dado que os registros dispon ́ıveis at ́e o momento descrevem atendimentos nas  ́areas de
+Profissionalizac ̧  ̃ao e Desdobramentos T ́ecnicos com maior regularidade e consistˆencia, as
+perguntas foram formuladas com foco nessas dimens  ̃oes, a fim de extrair o m ́aximo de
+valor da base consolidada antes de ampliar o escopo da an ́alise.
+As perguntas de neg  ́ocio definidas para esta primeira vers ̃ao do painel s ̃ao:
+1. Qual  ́e a taxa de convers  ̃ao nos cursos profissionalizantes? Dentre os adoles-
+centes encaminhados para cursos profissionalizantes, quantos foram efetivamente
+inseridos? Essa pergunta busca identificar se h ́a uma perda significativa entre o
+encaminhamento e a participac ̧  ̃ao real nos cursos, apontando poss ́ıveis gargalos
+no processo.
+2. Qual  ́e a taxa de convers  ̃ao no mercado de trabalho? Dentre os adolescentes
+encaminhados para o mercado de trabalho, quantos foram efetivamente inseridos?
+De forma an ́aloga `a pergunta anterior, o objetivo  ́e verificar se o volume de enca-
+minhamentos se traduz em inserc ̧  ̃oes reais e como essa relac ̧  ̃ao evoluiu ao longo
+do tempo.
+3. Como  ́e o fluxo de entrada e sa ́ıda ao longo do tempo? O objetivo  ́e monito-
+rar o volume de novas admiss  ̃oes (entradas) em contrapartida aos desligamentos
+(sa ́ıdas) dos programas. Essa an ́alise permite identificar padr  ̃oes de sazonalidade,
+per ́ıodos de maior rotatividade e auxiliar no planejamento de vagas e alocac ̧  ̃ao de
+infraestrutura da instituic ̧  ̃ao.
+Al ́em das perguntas diretamente comparativas, o painel tamb ́em dever ́a oferecer
+uma vis ̃ao geral da evoluc ̧  ̃ao temporal dos atendimentos por  ́area e da proporc ̧  ̃ao entre as
+categorias, servindo como ponto de entrada para a explorac ̧  ̃ao dos dados. Cabe destacar
+que o escopo atual da an ́alise  ́e delimitado pela compreens ̃ao parcial das regras que regem
+os dados: quest  ̃oes pendentes junto aos respons ́aveis pela Fundac ̧  ̃ao poder ̃ao revelar novas
+dimens  ̃oes anal ́ıticas e ampliar as perguntas de neg  ́ocio em vers  ̃oes futuras do painel.
+4. Ambiente de Desenvolvimento
+O ambiente de desenvolvimento do painel foi estruturado com base em duas ferramentas
+principais: Streamlit e Plotly. A escolha do Streamlit como base da aplicac ̧  ̃ao se justifica
