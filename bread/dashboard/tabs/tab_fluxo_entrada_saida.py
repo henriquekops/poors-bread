@@ -114,11 +114,7 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
         <div class="info-box">
             <div class="info-box-title"> Aplicação Prática no Planejamento de Vagas e Infraestrutura</div>
             <div class="info-box-content">
-                A análise de sazonalidade revela os momentos críticos de rotatividade do público atendido. 
-                Meses com alto volume de novos ingressos exigem reforço nas equipes de triagem técnica e assistencial. 
-                Paralelamente, picos de desligamento (comumente associados ao encerramento de ciclos letivos ou de capacitação no final e meio do ano) 
-                indicam oportunidades para a reabertura imediata de vagas e reestruturação física de salas de aula e dormitórios. 
-                Manter um saldo líquido previsível ajuda a evitar a sobrecarga de atendimentos ou a ociosidade de instalações.
+                Texto descritivo
             </div>
         </div>
         """,

@@ -216,34 +216,23 @@ st.sidebar.markdown(
     """
 )
 
-# 5. Header Title
-st.markdown('<div class="main-title">Fundação Pão dos Pobres</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Análise de Métricas Operacionais e Indicadores de Impacto Social</div>', unsafe_allow_html=True)
-
 # 6. Tab layout
-tab1, tab2, tab3, tab4 = st.tabs([
-    "Visão Geral", 
-    "Curso Profissionalizante", 
-    "Mercado de Trabalho", 
-    "Fluxo de Entrada/Saída"
-])
-
-
-# TAB 1: VISÃO GERAL
-with tab1:
+def page_visao_geral():
     tab_visao_geral.render(df_filtered, selected_years, render_kpi, customize_fig)
 
-
-# TAB 2: CURSO PROFISSIONALIZANTE
-with tab2:
+def page_curso_profissionalizante():
     tab_curso_profissionalizante.render(df_filtered, render_kpi, customize_fig)
 
-
-# TAB 3: MERCADO DE TRABALHO
-with tab3:
+def page_mercado_trabalho():
     tab_mercado_trabalho.render(df_filtered, render_kpi, customize_fig)
 
-
-# TAB 4: FLUXO DE ENTRADA E SAÍDA
-with tab4:
+def page_fluxo_entrada_saida():
     tab_fluxo_entrada_saida.render(df_filtered, month_order, render_kpi, customize_fig)
+
+pg = st.navigation([
+    st.Page(page_visao_geral, title="Visão Geral"),
+    st.Page(page_curso_profissionalizante, title="Curso Profissionalizante"),
+    st.Page(page_mercado_trabalho, title="Mercado de Trabalho"),
+    st.Page(page_fluxo_entrada_saida, title="Fluxo de Entrada/Saída")
+], position="top")
+pg.run()
