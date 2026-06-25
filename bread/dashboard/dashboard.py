@@ -8,7 +8,7 @@ from tabs import tab_visao_geral, tab_curso_profissionalizante, tab_mercado_trab
 # 1. Page Configuration
 st.set_page_config(
     page_title="Dashboard Pão dos Pobres",
-    page_icon="🍞",
+    page_icon=Path(__file__).parent / "assets" / "logo_pdp.png",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
