@@ -10,7 +10,7 @@ st.set_page_config(
     page_title="Dashboard Pão dos Pobres",
     page_icon="🍞",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed",
 )
 
 # 2. Styling & CSS injection for premium look
@@ -191,7 +191,8 @@ df = df.sort_values("data")
 # 4. Sidebar Configuration
 logo_path = Path(__file__).parent / "assets" / "dashboard_logo.png"
 if logo_path.exists():
-    st.sidebar.image(str(logo_path), width='stretch')
+    st.logo(str(logo_path))
+    # st.sidebar.image(str(logo_path), width='stretch')
 
 st.sidebar.markdown("### Filtros Globais")
 
@@ -234,5 +235,5 @@ pg = st.navigation([
     st.Page(page_curso_profissionalizante, title="Curso Profissionalizante"),
     st.Page(page_mercado_trabalho, title="Mercado de Trabalho"),
     st.Page(page_fluxo_entrada_saida, title="Fluxo de Entrada/Saída")
-], position="top")
+], position="top", expanded=False)
 pg.run()

@@ -43,7 +43,7 @@ def render(df_filtered, selected_years, render_kpi, customize_fig):
                 "saude": "#82c3e2"
             },
             labels={"data": "Data", "valor": "Total de Atendimentos", "area": "Área"},
-            title="Evolução Temporal dos Atendimentos por Área"
+            # title="Evolução Temporal dos Atendimentos por Área"
         )
         # Relabel legend traces
         fig_area_ts.for_each_trace(lambda t: t.update(name=area_labels_full.get(t.name, t.name)))
@@ -65,7 +65,7 @@ def render(df_filtered, selected_years, render_kpi, customize_fig):
                 "Saúde": "#82c3e2"
             },
             hole=0.4,
-            title="Proporção Acumulada de Atendimentos"
+            # title="Proporção Acumulada de Atendimentos"
         )
         fig_pie = customize_fig(fig_pie, hovermode=None)
         st.plotly_chart(fig_pie, width='stretch')
@@ -95,7 +95,7 @@ def render(df_filtered, selected_years, render_kpi, customize_fig):
         y="Categoria",
         orientation="h",
         labels={"valor": "Total de Atendimentos", "Categoria": "Categoria / Status"},
-        title=f"Distribuição de Atendimentos em {area_labels_full[selected_area]}",
+        # title=f"Distribuição de Atendimentos em {area_labels_full[selected_area]}",
         color_discrete_sequence=["#006fa1"]
     )
     fig_cat = customize_fig(fig_cat, hovermode="y unified")

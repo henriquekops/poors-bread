@@ -4,7 +4,7 @@ import streamlit as st
 
 def render(df_filtered, render_kpi, customize_fig):
     # TAB 3: MERCADO DE TRABALHO
-    st.markdown("### Pergunta 2: Taxa de conversão no mercado de trabalho?")
+    st.markdown("### Taxa de conversão no mercado de trabalho")
     st.markdown("*Dentre os adolescentes encaminhados para o mercado de trabalho, quantos foram efetivamente inseridos?*")
 
     df_jobs = df_filtered[
@@ -47,12 +47,13 @@ def render(df_filtered, render_kpi, customize_fig):
 
     c1, c2 = st.columns(2)
     with c1:
+        st.text
         fig_jobs_trend = px.line(
             df_jobs_pivot,
             x="data",
             y=[col_enc_job, col_ins_job],
             labels={"data": "Data", "value": "Quantidade", "variable": "Indicador"},
-            title="Evolução de Encaminhamentos vs. Contratações",
+            # title="Evolução de Encaminhamentos vs. Contratações",
             color_discrete_map={
                 col_enc_job: "#0f516e",
                 col_ins_job: "#006fa1"
@@ -69,7 +70,7 @@ def render(df_filtered, render_kpi, customize_fig):
             df_jobs_pivot,
             x="data",
             y="Taxa de Conversão (%)",
-            title="Taxa de Empregabilidade Mensal (%)",
+            # title="Taxa de Empregabilidade Mensal (%)",
             color_discrete_sequence=["#006fa1"]
         )
         fig_jobs_conv = customize_fig(fig_jobs_conv)
@@ -79,11 +80,8 @@ def render(df_filtered, render_kpi, customize_fig):
         """
         <div class="info-box">
             <div class="info-box-title"> Insight de Empregabilidade e Relação com o Mercado</div>
-            <div class="info-box-content">
-                A taxa de conversão no mercado de trabalho indica o sucesso da transição escola-trabalho propiciada pela Fundação. 
-                Flutuações bruscas nesta métrica refletem fatores macroeconômicos (como abertura de vagas de Jovem Aprendiz por empresas parceiras 
-                em períodos específicos do ano) e o alinhamento da qualificação técnica do jovem com as exigências de mercado. 
-                Períodos de encaminhamento elevado sem contratação proporcional podem indicar gargalos que exigem capacitação complementar ou mediação mais próxima.
+            <div class="info-box-content", style="color: black;">
+                Descrição detalhada
             </div>
         </div>
         """,

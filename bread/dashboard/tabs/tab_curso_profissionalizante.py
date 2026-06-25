@@ -4,7 +4,7 @@ import streamlit as st
 
 def render(df_filtered, render_kpi, customize_fig):
     # TAB 2: CURSO PROFISSIONALIZANTE
-    st.markdown("### Pergunta 1: Taxa de conversão nos cursos profissionalizantes?")
+    st.markdown("### Taxa de conversão nos cursos profissionalizantes")
     st.markdown("*Dentre os adolescentes encaminhados para cursos profissionalizantes, quantos foram efetivamente inseridos?*")
 
     df_course = df_filtered[
@@ -52,7 +52,7 @@ def render(df_filtered, render_kpi, customize_fig):
             x="data",
             y=[col_enc, col_ins],
             labels={"data": "Data", "value": "Quantidade", "variable": "Indicador"},
-            title="Evolução de Encaminhamentos vs. Inserções em Cursos",
+            # title="Evolução de Encaminhamentos vs. Inserções em Cursos",
             color_discrete_map={
                 col_enc: "#0f516e",
                 col_ins: "#006fa1"
@@ -69,7 +69,7 @@ def render(df_filtered, render_kpi, customize_fig):
             df_course_pivot,
             x="data",
             y="Taxa de Conversão (%)",
-            title="Taxa de Conversão Mensal (%)",
+            # title="Taxa de Conversão Mensal (%)",
             color_discrete_sequence=["#006fa1"]
         )
         fig_course_conv = customize_fig(fig_course_conv)
@@ -79,11 +79,8 @@ def render(df_filtered, render_kpi, customize_fig):
         """
         <div class="info-box">
             <div class="info-box-title"> Contextualização Técnica e Análise do Efeito Latência</div>
-            <div class="info-box-content">
-                A taxa de conversão em alguns períodos mensais pode demonstrar valores atípicos ou superiores a 100%. 
-                Este comportamento deve-se ao <strong>efeito de latência temporal</strong>: a indicação de um jovem a um curso profissionalizante (encaminhamento) 
-                pode ser registrada em um determinado mês, enquanto a sua matrícula efetiva e início no curso (inserção) se conclui apenas nos meses subsequentes. 
-                Portanto, para análises gerenciais, recomenda-se a visualização do acumulado anual ou de intervalos de tempo maiores, onde essa defasagem temporal é diluída.
+            <div class="info-box-content", style="color: blue;">
+                Descrição detalhada
             </div>
         </div>
         """,

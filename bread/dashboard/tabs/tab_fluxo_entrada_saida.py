@@ -4,7 +4,7 @@ import streamlit as st
 
 def render(df_filtered, month_order, render_kpi, customize_fig):
     # TAB 4: FLUXO DE ENTRADA E SAÍDA
-    st.markdown("### Pergunta 3: Como é o fluxo de entrada e saída ao longo do tempo?")
+    st.markdown("### Fluxo de entrada e saída")
     st.markdown("*Monitoramento do volume de novas admissões (entradas) em contrapartida aos desligamentos (saídas) dos programas.*")
 
     df_flow = df_filtered[
@@ -54,7 +54,7 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
             x="data",
             y=[col_in, col_out],
             labels={"data": "Data", "value": "Quantidade", "variable": "Fluxo"},
-            title="Fluxo Temporal: Novos Ingressos vs. Desligamentos",
+            # title="Fluxo Temporal: Novos Ingressos vs. Desligamentos",
             color_discrete_map={
                 col_in: "#0f516e",
                 col_out: "#006fa1"
@@ -74,7 +74,7 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
             y="Saldo Líquido",
             color="Tipo de Saldo",
             color_discrete_map={"Positivo": "#006fa1", "Negativo": "#0f516e"},
-            title="Saldo Líquido Mensal (Ingressos - Desligamentos)",
+            # title="Saldo Líquido Mensal (Ingressos - Desligamentos)",
             labels={"Saldo Líquido": "Saldo de Atendidos"}
         )
         fig_net_flow = customize_fig(fig_net_flow)
@@ -101,7 +101,7 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
             col_out: "#006fa1"
         },
         labels={"valor": "Média Histórica", "mes": "Mês do Ano", "tipo": "Categoria"},
-        title="Sazonalidade: Média de Entradas e Saídas por Mês",
+        # title="Sazonalidade: Média de Entradas e Saídas por Mês",
         category_orders={"mes": month_order}
     )
     # Customize names
@@ -113,7 +113,7 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
         """
         <div class="info-box">
             <div class="info-box-title"> Aplicação Prática no Planejamento de Vagas e Infraestrutura</div>
-            <div class="info-box-content">
+            <div class="info-box-content", style="color: black;">
                 Texto descritivo
             </div>
         </div>
