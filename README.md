@@ -6,7 +6,7 @@
 
 ### Dashboard
 
-https://dataviz-pucrs.streamlit.app
+https://poors-bread.streamlit.app
 
 ---
 
@@ -48,3 +48,5 @@ python -m bread --process
 ```bash
 python -m bread --dash
 ```
+
+---
