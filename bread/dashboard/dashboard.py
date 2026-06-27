@@ -3,6 +3,9 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from bread.preprocess.processor import load_all_data
+from bread.dashboard.upload import upload_dialog
+
 # 1. Page Configuration
 st.set_page_config(
     page_title="Dashboard Pão dos Pobres",
@@ -169,8 +172,15 @@ def customize_fig(fig, hovermode="x unified"):
     return fig
 
 # 3. Data Loading
-output_path = f"{Path(__file__).parent.parent.parent}/data/output"
-df = pd.read_csv(f"{output_path}/processed.csv")
+INPUT_PATH = Path(__file__).parent.parent.parent / "data" / "input" / "LEM"
+
+
+@st.cache_data
+def load_data():
+    return load_all_data(INPUT_PATH)
+
+
+df = load_data()
 
 # Standard month ordering
 month_order = [
@@ -209,10 +219,15 @@ df_filtered = df[(df["ano"] >= selected_years[0]) & (df["ano"] <= selected_years
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     """
-    **Fundação Pão dos Pobres**  
-    LEM (Levantamento Estatístico Mensal)      
+    **Fundação Pão dos Pobres**
+    LEM (Levantamento Estatístico Mensal)
     """
 )
+
+# Data upload
+st.sidebar.markdown("---")
+if st.sidebar.button("Adicionar dados (LEM)", use_container_width=True):
+    upload_dialog()
 
 # 5. Header Title
 st.markdown('<div class="main-title">Fundação Pão dos Pobres</div>', unsafe_allow_html=True)
