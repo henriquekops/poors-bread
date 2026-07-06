@@ -1,9 +1,17 @@
+import sys
 from pathlib import Path
+
+# Ensure the repo root is importable when run via `streamlit run` (e.g. Streamlit Cloud),
+# which only puts the script's own directory on sys.path, not the project root.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
 from tabs import tab_visao_geral, tab_curso_profissionalizante, tab_mercado_trabalho, tab_fluxo_entrada_saida
+from bread.preprocess.processor import load_all_data
+from bread.dashboard.upload import upload_dialog
 
 # 1. Page Configuration
 st.set_page_config(
@@ -171,8 +179,15 @@ def customize_fig(fig, hovermode="x unified"):
     return fig
 
 # 3. Data Loading
-output_path = f"{Path(__file__).parent.parent.parent}/data/output"
-df = pd.read_csv(f"{output_path}/processed.csv")
+INPUT_PATH = Path(__file__).parent.parent.parent / "data" / "input" / "LEM"
+
+
+@st.cache_data
+def load_data():
+    return load_all_data(INPUT_PATH)
+
+
+df = load_data()
 
 # Standard month ordering
 month_order = [
@@ -212,10 +227,19 @@ df_filtered = df[(df["ano"] >= selected_years[0]) & (df["ano"] <= selected_years
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     """
-    **Fundação Pão dos Pobres**  
-    LEM (Levantamento Estatístico Mensal)      
+    **Fundação Pão dos Pobres**
+    LEM (Levantamento Estatístico Mensal)
     """
 )
+
+# Data upload
+st.sidebar.markdown("---")
+if st.sidebar.button("Adicionar dados (LEM)", use_container_width=True):
+    upload_dialog()
+
+# 5. Header Title
+st.markdown('<div class="main-title">Fundação Pão dos Pobres</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Análise de Métricas Operacionais e Indicadores de Impacto Social</div>', unsafe_allow_html=True)
 
 # 6. Tab layout
 def page_visao_geral():
