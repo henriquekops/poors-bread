@@ -1,6 +1,8 @@
 import plotly.express as px
 import streamlit as st
 
+from ._footer import render_footer
+
 
 def render(df_filtered, selected_years, render_kpi, customize_fig):
     # TAB 1: VISÃO GERAL
@@ -100,3 +102,5 @@ def render(df_filtered, selected_years, render_kpi, customize_fig):
     # )
     # fig_cat = customize_fig(fig_cat, hovermode="y unified")
     # st.plotly_chart(fig_cat, width='stretch')
+
+    render_footer()

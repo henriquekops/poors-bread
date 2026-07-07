@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from tabs import tab_visao_geral, tab_mercado_trabalho, tab_fluxo_entrada_saida, tab_detalhamento_area
+from tabs import tab_visao_geral, tab_detalhamento_area, tab_mercado_trabalho, tab_fluxo_entrada_saida, tab_contatos
 from bread.preprocess.processor import load_all_data
 from bread.dashboard.upload import upload_dialog
 
@@ -246,10 +246,14 @@ def page_mercado_trabalho():
 def page_fluxo_entrada_saida():
     tab_fluxo_entrada_saida.render(df_filtered, month_order, render_kpi, customize_fig)
 
+def page_contatos():
+    tab_contatos.render()
+
 pg = st.navigation([
     st.Page(page_visao_geral, title="Visão Geral"),
     st.Page(page_curso_profissionalizante, title="Detalhamento por Área"),
     st.Page(page_mercado_trabalho, title="Mercado de Trabalho"),
-    st.Page(page_fluxo_entrada_saida, title="Fluxo de Entrada/Saída")
+    st.Page(page_fluxo_entrada_saida, title="Fluxo de Entrada/Saída"),
+    st.Page(page_contatos, title="Contatos"),
 ], position="top", expanded=False)
 pg.run()

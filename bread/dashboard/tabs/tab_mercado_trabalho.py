@@ -2,6 +2,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from ._footer import render_footer
 
 def render(df_filtered, render_kpi, customize_fig):
     # TAB 3: MERCADO DE TRABALHO
@@ -97,3 +98,5 @@ def render(df_filtered, render_kpi, customize_fig):
     #     """,
     #     unsafe_allow_html=True
     # )
+
+    render_footer()

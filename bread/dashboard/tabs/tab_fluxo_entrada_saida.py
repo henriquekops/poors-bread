@@ -2,6 +2,7 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 
+from ._footer import render_footer
 
 def _horizon_chart(x, y, customize_fig, band_count: int = 3):
     """
@@ -157,3 +158,5 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
         customize_fig=customize_fig,
     )
     st.plotly_chart(fig_horizon, width="stretch")
+
+    render_footer()

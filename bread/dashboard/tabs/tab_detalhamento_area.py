@@ -3,6 +3,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from ._footer import render_footer
 
 AREA_META = {
     "desdobramentos tecnicos": {
@@ -180,3 +181,5 @@ def render(df_filtered, render_kpi, customize_fig):
     st.markdown("---")
 
     _render_area_charts(df_area, meta, customize_fig)
+
+    render_footer()
