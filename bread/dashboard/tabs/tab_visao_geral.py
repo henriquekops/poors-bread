@@ -70,33 +70,33 @@ def render(df_filtered, selected_years, render_kpi, customize_fig):
         fig_pie = customize_fig(fig_pie, hovermode=None)
         st.plotly_chart(fig_pie, width='stretch')
 
-    st.markdown("---")
+    # st.markdown("---")
 
-    # Detailing section
-    st.markdown("### Detalhamento por Área")
-    selected_area = st.selectbox(
-        "Selecione uma Área de Atendimento para detalhar categorias:",
-        options=["desdobramentos tecnicos", "educacao", "profissionalizacao", "saude"],
-        format_func=lambda x: area_labels_full.get(x, x)
-    )
+    # # Detailing section
+    # st.markdown("### Detalhamento por Área")
+    # selected_area = st.selectbox(
+    #     "Selecione uma Área de Atendimento para detalhar categorias:",
+    #     options=["desdobramentos tecnicos", "educacao", "profissionalizacao", "saude"],
+    #     format_func=lambda x: area_labels_full.get(x, x)
+    # )
 
-    df_detail = df_filtered[df_filtered["area"] == selected_area].copy()
+    # df_detail = df_filtered[df_filtered["area"] == selected_area].copy()
 
-    df_cat = df_detail.groupby(["tipo", "status"])["valor"].sum().reset_index()
-    df_cat["Categoria"] = df_cat.apply(
-        lambda r: f"{r['tipo']} ({r['status']})" if r["status"] != "none" else r["tipo"],
-        axis=1
-    )
-    df_cat = df_cat.sort_values("valor", ascending=True)
+    # df_cat = df_detail.groupby(["tipo", "status"])["valor"].sum().reset_index()
+    # df_cat["Categoria"] = df_cat.apply(
+    #     lambda r: f"{r['tipo']} ({r['status']})" if r["status"] != "none" else r["tipo"],
+    #     axis=1
+    # )
+    # df_cat = df_cat.sort_values("valor", ascending=True)
 
-    fig_cat = px.bar(
-        df_cat,
-        x="valor",
-        y="Categoria",
-        orientation="h",
-        labels={"valor": "Total de Atendimentos", "Categoria": "Categoria / Status"},
-        # title=f"Distribuição de Atendimentos em {area_labels_full[selected_area]}",
-        color_discrete_sequence=["#006fa1"]
-    )
-    fig_cat = customize_fig(fig_cat, hovermode="y unified")
-    st.plotly_chart(fig_cat, width='stretch')
+    # fig_cat = px.bar(
+    #     df_cat,
+    #     x="valor",
+    #     y="Categoria",
+    #     orientation="h",
+    #     labels={"valor": "Total de Atendimentos", "Categoria": "Categoria / Status"},
+    #     # title=f"Distribuição de Atendimentos em {area_labels_full[selected_area]}",
+    #     color_discrete_sequence=["#006fa1"]
+    # )
+    # fig_cat = customize_fig(fig_cat, hovermode="y unified")
+    # st.plotly_chart(fig_cat, width='stretch')

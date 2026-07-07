@@ -8,7 +8,7 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
     st.markdown("*Monitoramento do volume de novas admissões (entradas) em contrapartida aos desligamentos (saídas) dos programas.*")
 
     df_flow = df_filtered[
-        (df_filtered["area"] == "educacao") &
+        (df_filtered["area"] == "desdobramentos tecnicos") &
         (df_filtered["tipo"].isin(["Novos ingressos", "Desligamentos"]))
     ].copy()
 
@@ -80,43 +80,43 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
         fig_net_flow = customize_fig(fig_net_flow)
         st.plotly_chart(fig_net_flow, width='stretch')
 
-    st.markdown("---")
+    # st.markdown("---")
 
-    # Seasonality Analysis
-    st.markdown("### Análise de Sazonalidade Histórica")
-    st.markdown("*Média histórica de ingressos e saídas por mês do ano. Auxilia na alocação de infraestrutura e equipe.*")
+    # # Seasonality Analysis
+    # st.markdown("### Análise de Sazonalidade Histórica")
+    # st.markdown("*Média histórica de ingressos e saídas por mês do ano. Auxilia na alocação de infraestrutura e equipe.*")
 
-    df_flow["mes_idx"] = df_flow["mes"].map({m: i for i, m in enumerate(month_order)})
-    df_season = df_flow.groupby(["mes_idx", "mes", "tipo"])["valor"].mean().reset_index()
-    df_season = df_season.sort_values("mes_idx")
+    # df_flow["mes_idx"] = df_flow["mes"].map({m: i for i, m in enumerate(month_order)})
+    # df_season = df_flow.groupby(["mes_idx", "mes", "tipo"])["valor"].mean().reset_index()
+    # df_season = df_season.sort_values("mes_idx")
 
-    fig_season = px.bar(
-        df_season,
-        x="mes",
-        y="valor",
-        color="tipo",
-        barmode="group",
-        color_discrete_map={
-            col_in: "#0f516e",
-            col_out: "#006fa1"
-        },
-        labels={"valor": "Média Histórica", "mes": "Mês do Ano", "tipo": "Categoria"},
-        # title="Sazonalidade: Média de Entradas e Saídas por Mês",
-        category_orders={"mes": month_order}
-    )
-    # Customize names
-    fig_season.for_each_trace(lambda t: t.update(name="Novos Ingressos (Entradas)" if t.name == col_in else "Desligamentos (Saídas)"))
-    fig_season = customize_fig(fig_season, hovermode="x unified")
-    st.plotly_chart(fig_season, width='stretch')
+    # fig_season = px.bar(
+    #     df_season,
+    #     x="mes",
+    #     y="valor",
+    #     color="tipo",
+    #     barmode="group",
+    #     color_discrete_map={
+    #         col_in: "#0f516e",
+    #         col_out: "#006fa1"
+    #     },
+    #     labels={"valor": "Média Histórica", "mes": "Mês do Ano", "tipo": "Categoria"},
+    #     # title="Sazonalidade: Média de Entradas e Saídas por Mês",
+    #     category_orders={"mes": month_order}
+    # )
+    # # Customize names
+    # fig_season.for_each_trace(lambda t: t.update(name="Novos Ingressos (Entradas)" if t.name == col_in else "Desligamentos (Saídas)"))
+    # fig_season = customize_fig(fig_season, hovermode="x unified")
+    # st.plotly_chart(fig_season, width='stretch')
 
-    st.markdown(
-        """
-        <div class="info-box">
-            <div class="info-box-title"> Aplicação Prática no Planejamento de Vagas e Infraestrutura</div>
-            <div class="info-box-content", style="color: black;">
-                Texto descritivo
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # st.markdown(
+    #     """
+    #     <div class="info-box">
+    #         <div class="info-box-title"> Aplicação Prática no Planejamento de Vagas e Infraestrutura</div>
+    #         <div class="info-box-content", style="color: black;">
+    #             Texto descritivo
+    #         </div>
+    #     </div>
+    #     """,
+    #     unsafe_allow_html=True
+    # )

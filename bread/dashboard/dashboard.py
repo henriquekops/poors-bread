@@ -209,7 +209,7 @@ if logo_path.exists():
     st.logo(str(logo_path))
     # st.sidebar.image(str(logo_path), width='stretch')
 
-st.sidebar.markdown("### Filtros Globais")
+# st.sidebar.markdown("### Filtros Globais")
 
 years = sorted(df["ano"].unique())
 selected_years = st.sidebar.slider(
@@ -223,14 +223,6 @@ selected_years = st.sidebar.slider(
 # Apply global filter
 df_filtered = df[(df["ano"] >= selected_years[0]) & (df["ano"] <= selected_years[1])].copy()
 
-# Sidebar Info
-st.sidebar.markdown("---")
-st.sidebar.markdown(
-    """
-    **Fundação Pão dos Pobres**
-    LEM (Levantamento Estatístico Mensal)
-    """
-)
 
 # Data upload
 st.sidebar.markdown("---")
@@ -238,8 +230,8 @@ if st.sidebar.button("Adicionar dados (LEM)", use_container_width=True):
     upload_dialog()
 
 # 5. Header Title
-st.markdown('<div class="main-title">Fundação Pão dos Pobres</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Análise de Métricas Operacionais e Indicadores de Impacto Social</div>', unsafe_allow_html=True)
+# st.markdown('<div class="main-title">Fundação Pão dos Pobres</div>', unsafe_allow_html=True)
+# st.markdown('<div class="subtitle">Análise de Métricas Operacionais e Indicadores de Impacto Social</div>', unsafe_allow_html=True)
 
 # 6. Tab layout
 def page_visao_geral():
