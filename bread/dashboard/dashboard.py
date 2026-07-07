@@ -1,8 +1,6 @@
 import sys
 from pathlib import Path
 
-from bread.dashboard.tabs import tab_detalhamento_area
-
 # Ensure the repo root is importable when run via `streamlit run` (e.g. Streamlit Cloud),
 # which only puts the script's own directory on sys.path, not the project root.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
@@ -11,7 +9,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from tabs import tab_visao_geral, tab_mercado_trabalho, tab_fluxo_entrada_saida
+from tabs import tab_visao_geral, tab_mercado_trabalho, tab_fluxo_entrada_saida, tab_detalhamento_area
 from bread.preprocess.processor import load_all_data
 from bread.dashboard.upload import upload_dialog
 
