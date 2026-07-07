@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+from bread.dashboard.tabs import tab_detalhamento_area
+
 # Ensure the repo root is importable when run via `streamlit run` (e.g. Streamlit Cloud),
 # which only puts the script's own directory on sys.path, not the project root.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
@@ -9,7 +11,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from tabs import tab_visao_geral, tab_curso_profissionalizante, tab_mercado_trabalho, tab_fluxo_entrada_saida
+from tabs import tab_visao_geral, tab_mercado_trabalho, tab_fluxo_entrada_saida
 from bread.preprocess.processor import load_all_data
 from bread.dashboard.upload import upload_dialog
 
@@ -209,7 +211,7 @@ if logo_path.exists():
     st.logo(str(logo_path))
     # st.sidebar.image(str(logo_path), width='stretch')
 
-st.sidebar.markdown("### Filtros Globais")
+# st.sidebar.markdown("### Filtros Globais")
 
 years = sorted(df["ano"].unique())
 selected_years = st.sidebar.slider(
@@ -223,14 +225,6 @@ selected_years = st.sidebar.slider(
 # Apply global filter
 df_filtered = df[(df["ano"] >= selected_years[0]) & (df["ano"] <= selected_years[1])].copy()
 
-# Sidebar Info
-st.sidebar.markdown("---")
-st.sidebar.markdown(
-    """
-    **Fundação Pão dos Pobres**
-    LEM (Levantamento Estatístico Mensal)
-    """
-)
 
 # Data upload
 st.sidebar.markdown("---")
@@ -238,15 +232,15 @@ if st.sidebar.button("Adicionar dados (LEM)", use_container_width=True):
     upload_dialog()
 
 # 5. Header Title
-st.markdown('<div class="main-title">Fundação Pão dos Pobres</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Análise de Métricas Operacionais e Indicadores de Impacto Social</div>', unsafe_allow_html=True)
+# st.markdown('<div class="main-title">Fundação Pão dos Pobres</div>', unsafe_allow_html=True)
+# st.markdown('<div class="subtitle">Análise de Métricas Operacionais e Indicadores de Impacto Social</div>', unsafe_allow_html=True)
 
 # 6. Tab layout
 def page_visao_geral():
     tab_visao_geral.render(df_filtered, selected_years, render_kpi, customize_fig)
 
 def page_curso_profissionalizante():
-    tab_curso_profissionalizante.render(df_filtered, render_kpi, customize_fig)
+    tab_detalhamento_area.render(df_filtered, render_kpi, customize_fig)
 
 def page_mercado_trabalho():
     tab_mercado_trabalho.render(df_filtered, render_kpi, customize_fig)
@@ -256,7 +250,7 @@ def page_fluxo_entrada_saida():
 
 pg = st.navigation([
     st.Page(page_visao_geral, title="Visão Geral"),
-    st.Page(page_curso_profissionalizante, title="Curso Profissionalizante"),
+    st.Page(page_curso_profissionalizante, title="Detalhamento por Área"),
     st.Page(page_mercado_trabalho, title="Mercado de Trabalho"),
     st.Page(page_fluxo_entrada_saida, title="Fluxo de Entrada/Saída")
 ], position="top", expanded=False)
