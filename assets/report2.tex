@@ -1,0 +1,89 @@
+\documentclass[12pt]{article}
+
+\usepackage{hyperref}
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+% \usepackage[latin1]{inputenc}  
+\usepackage[inline]{enumitem}
+\usepackage{csquotes}
+\usepackage{booktabs}
+
+\sloppy
+
+\title{Relatório Técnico 2\\Dashboard Pão dos Pobres}
+
+\author{Gustavo Losch\inst{1}, Henrique Mayer\inst{1}, Henrique Kops\inst{1}}
+
+\address{
+    Escola Politécnica -- Pontíficia Universidade Católica do Rio Grande do Sul (PUCRS)
+    \email{\{g.losch, h.ramos, h.kops\}@edu.pucrs.br}
+}
+
+\begin{document} 
+
+\maketitle
+
+\section{Visualizações}
+As visualizações utilizadas no \textit{dashboard} foram criadas principalmente para responder as perguntas propostas no Relatório Técnico 1~\cite{relatorio1}. Além das perguntas, outras visualizações foram criadas para suportar outras análises importantes para o assunto, são agregadas em abas. Portanto, as subseções seguintes representam cada uma das abas implementadas na solução final. Além disso, a ferramenta dispõe de um filtro global, na barra lateral esquerda, a qual filtra o intervalo de tempo que será mostrado nas visualizações presentes no \textit{dashboard}. Juntamente ao filtro, também é possível adicionar novos dados à solução desde que estejam na mesma formatação dos arquivos de Levantamento Estatístico Mensal (LEM) providos anteriormente.
+
+\subsection{Visão Geral}
+A aba de Visão Geral foi desenvolvida com a ideia central de fornecer um panorama rápido e direto sobre a volumetria total da Fundação Pão dos Pobres. O objetivo é que, ao acessar a ferramenta, o gestor consiga imediatamente compreender o tamanho da operação no período selecionado e como essa operação se divide entre as grandes áreas de atuação da instituição. A tela inicia apresentando indicadores de performance numéricos focados no resumo da operação, destacando o volume total de atendimentos realizados, a área que gerou a maior demanda de trabalho e a quantidade de categorias operacionais que estão sendo monitoradas pelos dados.
+
+Na sequência, são apresentadas duas visualizações principais que detalham essas informações. A primeira delas é um gráfico de linha que ilustra a evolução temporal dos atendimentos, separados pelas quatro grandes áreas de atuação. Essa representação gráfica é fundamental para identificar sazonalidades, picos anormais de demanda em meses específicos e avaliar se o volume de atividades da fundação está crescendo ou diminuindo ao longo do tempo. Logo ao lado, a segunda visualização é um gráfico de rosca (ou pizza vazada) que exibe a proporção acumulada de atendimentos para cada uma dessas mesmas áreas. Enquanto o gráfico de linhas permite entender a linha do tempo, o gráfico de rosca tem a função de consolidar todo o período, deixando evidente de forma visual e percentual quais áreas representam a maior parte do esforço operacional da fundação, facilitando o direcionamento de recursos e a tomada de decisão estratégica.
+
+\subsection{Detalhamento por Área}
+A aba de Detalhamento por Área foi projetada com o propósito de aprofundar a investigação iniciada na Visão Geral. Enquanto a primeira aba fornece o cenário completo, esta seção funciona como uma maneira de explorar a Área específica. O usuário pode selecionar uma área específica de atuação e examinar isoladamente o comportamento das categorias operacionais que a compõem. A interação começa com \textit{KPIs} contextuais à área escolhida, que reportam o total de atendimentos filtrados, o número exato de categorias que compõem aquele segmento e qual delas é a categoria destaque, ou seja, a que gerou o maior volume de atividades.
+
+Abaixo dos indicadores, a aba exibe um conjunto de duas visualizações que analisam os dados sob perspectivas complementares. A primeira visualização é um gráfico de linhas que mostra a evolução temporal do volume de atendimentos para cada uma das categorias internas. Esse gráfico é vital para observar de forma isolada como cada frente de trabalho se comporta ao longo dos meses e descobrir se tendências ou picos foram causados por uma única categoria. Através da visualização criada utilizando o pacote \textit{plotly}~\cite{plotly} é possível filtrar cada uma das categorias internas ou até redimensionar o tamanho e escala mostradas na visualização. Ao lado do gráfico de linhas, há um gráfico de barras horizontais que ordena crescentemente todas as categorias da área com base em sua frequência de ocorrência. Esta ordenação oferece uma comparação direta e imediata, deixando explícito quais são os serviços ou frentes mais representativos dentro daquela área específica.
+
+
+\subsection{Mercado de Trabalho}
+A aba dedicada ao Mercado de Trabalho concentra-se em acompanhar a trajetória profissional dos assistidos pela organização, respondendo à pergunta realizada no Relatório Técnico 1~\cite{relatorio1} sobre a taxa de sucesso das iniciativas de empregabilidade. O foco central desta seção é analisar a conversão entre os indivíduos que foram capacitados e encaminhados para oportunidades e aqueles que efetivamente ingressaram no mercado. Logo no topo, mostramos os indicadores de performance essenciais: o número total de jovens encaminhados para vagas, o total de jovens efetivamente contratados e, como métrica final, a taxa de empregabilidade geral, dada pela equação $Empregabilidade = \frac{Contratados}{Encaminhados}$, que representa o percentual de conversão de todo o período analisado. 
+
+
+Para detalhar o comportamento dessa conversão ao longo do tempo, a aba dispõe de duas visualizações. A primeira consiste em um gráfico de linhas que sobrepõe a quantidade de assistidos encaminhados e a quantidade de contratados mês a mês. O preenchimento visual colorido entre as duas linhas destaca a diferença entre a quantidade de jovens encaminhados e contratados, ilustrando o volume de encaminhamentos que não resultaram em emprego direto. Complementando a visão temporal, a segunda visualização é um gráfico de barras que exibe a taxa de conversão percentual calculada mensalmente. Enquanto o gráfico de linhas foca nos volumes reais e absolutos de pessoas, o gráfico de barras evidencia o desempenho relativo das iniciativas, permitindo à gestão identificar meses em que, mesmo com um número menor de encaminhamentos totais, houve uma maior proporção de sucesso e efetividade nas contratações.
+
+\subsection{Fluxo de Entrada e Saída}
+Para monitorar a rotatividade e a ocupação dos programas da instituição, a aba de Fluxo de Entrada e Saída foca exclusivamente no balanço entre novas admissões e desligamentos. O objetivo é compreender se a fundação está absorvendo mais pessoas do que liberando ao longo do tempo, ou vice-versa, e qual o ritmo dessa mudança estrutural possivelmente nos mostrando um comportamento sazonal. A tela apresenta inicialmente indicadores diretos totalizando os novos ingressos (entradas), os desligamentos (saídas) e, por fim, o fluxo líquido de atendidos, representado pela equação $Atendidos = Entradas - Saídas$ ao longo do período selecionado.
+
+A visualização central desta aba utiliza uma gráfico chamado \textit{Horizon Chart}. O objetivo desse gráfico é exibir a evolução do saldo líquido mensal, ajudando na identificação de grandes picos. Para alcançar isso, o gráfico subdivide a área de plotagem e "dobra" os valores maiores para dentro de um mesmo eixo reduzido. A leitura e interpretação desta visualização é guiada pela cor e pela geometria dessas dobras, que são marcadas por linhas horizontais pontilhadas. As faixas pintadas em azul claro indicam os meses com saldo positivo, apontando que houve mais entradas do que saídas. Inversamente, as faixas em azul escuro representam os períodos de saldo negativo. Quanto mais dobras uma faixa apresentar, maior é a magnitude absoluta daquele saldo, permitindo à gestão bater o olho e identificar rapidamente os meses de maior impacto populacional apenas pela densidade visual, de forma compacta e esteticamente limpa.
+
+\section{Análise de Dados}
+Nesta seção, realizamos uma análise de dados focada exclusivamente nas visualizações criadas para responder às perguntas centrais definidas no Relatório Técnico 1~\cite{relatorio1}. É importante ressaltar que o painel completo possui outros gráficos e métricas adicionais, contudo, o foco aqui irá se manter na resposta às perguntas feitas anteriormente.
+
+Ao examinar o comportamento temporal por meio do gráfico de linhas, ilustrado na Figura~\ref{fig: lineplot}, cujo registro se concentra majoritariamente entre o início de 2023 e o final de 2024, nota-se que a curva de contratados (inseridos) acompanha com grande aderência a curva de encaminhados. A área colorida, que evidencia o intervalo de jovens não absorvidos imediatamente, mantém-se predominantemente estreita. O período de maior volume ocorreu entre o segundo semestre de 2023 e o primeiro trimestre de 2024, alcançando picos mensais de mais de 20 encaminhamentos. Em contraste, no segundo semestre de 2024, constata-se uma tendência de redução nos volumes absolutos, estabilizando-se em patamares inferiores a 10 jovens ao mês.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{assets/lineplot.png}
+    \caption{Comparativo temporal entre o volume de jovens encaminhados para oportunidades e o total efetivamente contratado.}
+    \label{fig: lineplot}
+\end{figure}
+
+Partindo para o fluxo de entrada e saída dos programas, a visualização apresentada emprega \textit{horizon chart}, apresentado na Figura~\ref{fig: horizon}, para representar este indicador de saldo. Neste modelo, os saldos positivos são destacados no eixo superior, enquanto os saldos negativos são projetados no eixo inferior, em azul escuro. Analisando a progressão temporal, o período compreendido entre 2021 e o primeiro semestre de 2023 exibe uma alternância contínua, caracterizada por ondas de saldo positivo interrompidas por vales negativos. No segundo semestre de 2023, o gráfico registra um grande fluxo positivo, evidenciado pelos picos positivos, indicando um volume grande de novas admissões no período. O aspecto visual mais crítico da série histórica, contudo, concentra-se entre o final de 2023 e o término de 2024. Nessa janela, observa-se uma quantidade extensa de saldos negativos. A partir de 2025, o cenário parece se recuperar, retomando um padrão de curvas positivas estabilizadas.
+
+É fundamental ressaltar que a interpretação fidedigna destas visualizações pode estar sendo severamente prejudicada pela qualidade dos dados existentes, os quais percebemos inconsistências na etapa de pré-processamento. A presença de padrões anômalos, como o longo bloco contínuo de evasão extrema em 2024, sugere fortemente a existência de inconsistências e ruídos na base de dados original. Tais anomalias frequentemente resultam de problemas no processo de registro operacional, como o processamento de desligamentos acumulados de meses anteriores em uma única data, ou o não-lançamento de novos ingressos, o que distorce a realidade temporal dos fluxos da organização.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{assets/horizon.png}
+    \caption{Evolução do saldo líquido mensal de vínculos.}
+    \label{fig: horizon}
+\end{figure}
+
+
+\section{Limitações e Trabalhos Futuros}
+O desenvolvimento e a implantação do painel atual irão ajudar na visualização dos dados da Fundação Pão dos Pobres, porém, a arquitetura da solução apresenta algumas limitações estruturais inerentes à forma como os dados são atualmente coletados. A principal limitação reside no processo de ingestão de dados. O fluxo atual depende de arquivos de planilhas estáticas preenchidas manualmente que precisam passar por um processo de limpeza e transformação. Essa abordagem cria uma dependência direta do formato específico dessas planilhas. Caso a instituição altere a os nomes das categorias significativamente ou a forma de preenchimento, o processamento de dados falhará. Outra limitação importante é o nível de agregação dos dados. Atualmente, a base de dados consolida as informações mensalmente de forma agregada. A ausência de dados focados no indivíduo, com granularidade diária impossibilita o rastreamento preciso da jornada de um único assistido através dos programas da fundação. Consequentemente, análises mais avançadas, como o tempo exato de permanência de cada jovem e análise de retenção, tornam-se inviáveis com a modelagem de dados atual.
+
+Como trabalhos futuros para mitigar esses gargalos, a evolução do projeto envolve a substituição da ingestão via planilhas por uma integração direta na solução. Essa automação garantiria a atualização diária ou em tempo real do painel, eliminando o trabalho manual e o risco de quebra de formatação. Além disso, a transição para uma estrutura de rastreamento por indivíduo abriria portas para a inclusão análises mais complexas e modelos preditivos no painel. Com esse nível de detalhe, a ferramenta poderia prever sazonalidades de demanda, calcular a probabilidade de evasão de perfis específicos ou até projetar taxas futuras de sucesso na inserção no mercado de trabalho. Por fim, a implementação de um sistema robusto de autenticação de usuários e controle de acesso baseado em perfis permitiria que coordenadores visualizassem apenas os dados pertinentes aos seus respectivos departamentos, garantindo maior segurança e governança da informação institucional.
+
+\appendix
+\section{Links}
+A solução foi implantada e pode ser acessada através do link: \url{https://poors-bread.streamlit.app}. Assim como o código fonte da solução, versionado pode ser encontrado no seguinte repositório no \textit{GitHub}: \url{https://github.com/henriquekops/poors-bread}
+
+\bibliographystyle{plain}
+\bibliography{sbc-template}
+
+\end{document}
