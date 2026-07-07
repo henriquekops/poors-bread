@@ -182,12 +182,25 @@ def customize_fig(fig, hovermode="x unified"):
 INPUT_PATH = Path(__file__).parent.parent.parent / "data" / "input" / "LEM"
 
 
+def _input_signature() -> tuple:
+    """Fingerprint of the LEM inputs (name/size/mtime) so the cache invalidates
+    automatically whenever a file is added, removed, or changed on disk."""
+    return tuple(
+        sorted(
+            (p.name, p.stat().st_size, p.stat().st_mtime_ns)
+            for p in INPUT_PATH.glob("*.xlsx")
+        )
+    )
+
+
 @st.cache_data
-def load_data():
+def load_data(signature):
+    # `signature` is unused in the body on purpose: it is part of the cache key,
+    # forcing a reload when the underlying files change.
     return load_all_data(INPUT_PATH)
 
 
-df = load_data()
+df = load_data(_input_signature())
 
 # Standard month ordering
 month_order = [
@@ -228,6 +241,10 @@ df_filtered = df[(df["ano"] >= selected_years[0]) & (df["ano"] <= selected_years
 st.sidebar.markdown("---")
 if st.sidebar.button("Adicionar dados (LEM)", use_container_width=True):
     upload_dialog()
+
+if st.sidebar.button("Recarregar dados", use_container_width=True):
+    load_data.clear()
+    st.rerun()
 
 # 5. Header Title
 # st.markdown('<div class="main-title">Fundação Pão dos Pobres</div>', unsafe_allow_html=True)
