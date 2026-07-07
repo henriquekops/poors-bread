@@ -1,4 +1,5 @@
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
 
@@ -47,20 +48,29 @@ def render(df_filtered, render_kpi, customize_fig):
 
     c1, c2 = st.columns(2)
     with c1:
-        st.text
-        fig_jobs_trend = px.line(
-            df_jobs_pivot,
-            x="data",
-            y=[col_enc_job, col_ins_job],
-            labels={"data": "Data", "value": "Quantidade", "variable": "Indicador"},
-            # title="Evolução de Encaminhamentos vs. Contratações",
-            color_discrete_map={
-                col_enc_job: "#0f516e",
-                col_ins_job: "#006fa1"
-            }
+        fig_jobs_trend = go.Figure()
+        fig_jobs_trend.add_trace(go.Scatter(
+            x=df_jobs_pivot["data"],
+            y=df_jobs_pivot[col_ins_job],
+            name="Inseridos (Contratados)",
+            mode="lines",
+            line=dict(color="#006fa1", width=2),
+            fill="none",
+        ))
+        fig_jobs_trend.add_trace(go.Scatter(
+            x=df_jobs_pivot["data"],
+            y=df_jobs_pivot[col_enc_job],
+            name="Encaminhados",
+            mode="lines",
+            line=dict(color="#0f516e", width=2),
+            fill="tonexty",
+            fillcolor="rgba(15, 81, 110, 0.20)",
+        ))
+        fig_jobs_trend.update_layout(
+            xaxis_title="Data",
+            yaxis_title="Quantidade",
+            legend_title="Indicador",
         )
-        new_names_job = {col_enc_job: "Encaminhados", col_ins_job: "Inseridos (Contratados)"}
-        fig_jobs_trend.for_each_trace(lambda t: t.update(name=new_names_job.get(t.name, t.name)))
         fig_jobs_trend = customize_fig(fig_jobs_trend)
         st.plotly_chart(fig_jobs_trend, width='stretch')
 

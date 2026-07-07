@@ -4,7 +4,7 @@ import streamlit as st
 
 def render(df_filtered, selected_years, render_kpi, customize_fig):
     # TAB 1: VISÃO GERAL
-    st.markdown("### Análise Descritiva Geral")
+    # st.markdown("### Análise Descritiva Geral")
 
     # Overview metrics
     total_val = df_filtered["valor"].sum()

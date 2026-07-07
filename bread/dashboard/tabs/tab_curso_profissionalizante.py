@@ -1,4 +1,5 @@
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
 
@@ -47,19 +48,29 @@ def render(df_filtered, render_kpi, customize_fig):
 
     c1, c2 = st.columns(2)
     with c1:
-        fig_course_trend = px.line(
-            df_course_pivot,
-            x="data",
-            y=[col_enc, col_ins],
-            labels={"data": "Data", "value": "Quantidade", "variable": "Indicador"},
-            # title="Evolução de Encaminhamentos vs. Inserções em Cursos",
-            color_discrete_map={
-                col_enc: "#0f516e",
-                col_ins: "#006fa1"
-            }
+        fig_course_trend = go.Figure()
+        fig_course_trend.add_trace(go.Scatter(
+            x=df_course_pivot["data"],
+            y=df_course_pivot[col_ins],
+            name="Inseridos",
+            mode="lines",
+            line=dict(color="#006fa1", width=2),
+            fill="none",
+        ))
+        fig_course_trend.add_trace(go.Scatter(
+            x=df_course_pivot["data"],
+            y=df_course_pivot[col_enc],
+            name="Encaminhados",
+            mode="lines",
+            line=dict(color="#0f516e", width=2),
+            fill="tonexty",
+            fillcolor="rgba(15, 81, 110, 0.20)",
+        ))
+        fig_course_trend.update_layout(
+            xaxis_title="Data",
+            yaxis_title="Quantidade",
+            legend_title="Indicador",
         )
-        new_names = {col_enc: "Encaminhados", col_ins: "Inseridos"}
-        fig_course_trend.for_each_trace(lambda t: t.update(name=new_names.get(t.name, t.name)))
         fig_course_trend = customize_fig(fig_course_trend)
         st.plotly_chart(fig_course_trend, width='stretch')
 
