@@ -86,14 +86,14 @@ def render(df_filtered, render_kpi, customize_fig):
         fig_jobs_conv = customize_fig(fig_jobs_conv)
         st.plotly_chart(fig_jobs_conv, width='stretch')
 
-    st.markdown(
-        """
-        <div class="info-box">
-            <div class="info-box-title"> Insight de Empregabilidade e Relação com o Mercado</div>
-            <div class="info-box-content", style="color: black;">
-                Descrição detalhada
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # st.markdown(
+    #     """
+    #     <div class="info-box">
+    #         <div class="info-box-title"> Insight de Empregabilidade e Relação com o Mercado</div>
+    #         <div class="info-box-content", style="color: black;">
+    #             Descrição detalhada
+    #         </div>
+    #     </div>
+    #     """,
+    #     unsafe_allow_html=True
+    # )

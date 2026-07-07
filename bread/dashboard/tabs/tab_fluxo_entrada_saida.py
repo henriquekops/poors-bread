@@ -1,11 +1,107 @@
-import plotly.express as px
+import numpy as np
+import plotly.graph_objects as go
 import streamlit as st
 
 
+def _horizon_chart(x, y, customize_fig, band_count: int = 3):
+    """
+    Horizon chart.
+
+    The y-range is divided into `band_count` equal bands.
+    Each band is folded back to the [0, band_h] / [-band_h, 0] window and
+    drawn with a flat, solid color — no opacity variation between bands.
+      - positive bands: #006fa1
+      - negative bands: #0f516e
+    """
+    y = np.array(y, dtype=float)
+    max_abs = max(float(np.abs(y).max()), 1.0)
+    band_h = max_abs / band_count
+
+    fig = go.Figure()
+
+    pos_color = "rgba(0,111,161,0.85)"    # #006fa1, solid
+    neg_color = "rgba(15,81,110,0.85)"    # #0f516e, solid
+
+    for i in range(band_count):
+        lo = i * band_h
+
+        # Positive band i: fold values in [lo, lo+band_h] → [0, band_h]
+        y_pos = np.where(y > lo, np.minimum(y - lo, band_h), 0.0)
+
+        # Negative band i: fold values in [-lo-band_h, -lo] → [-band_h, 0]
+        y_neg = np.where(y < -lo, np.maximum(y + lo, -band_h), 0.0)
+
+        fig.add_trace(go.Scatter(
+            x=x,
+            y=y_pos,
+            mode="lines",
+            line=dict(shape="spline", smoothing=1.3, color="rgba(0,0,0,0)", width=0),
+            fill="tozeroy",
+            fillcolor=pos_color,
+            showlegend=(i == 0),
+            name="Saldo Positivo",
+            legendgroup="pos",
+            hoverinfo="skip",
+        ))
+        fig.add_trace(go.Scatter(
+            x=x,
+            y=y_neg,
+            mode="lines",
+            line=dict(shape="spline", smoothing=1.3, color="rgba(0,0,0,0)", width=0),
+            fill="tozeroy",
+            fillcolor=neg_color,
+            showlegend=(i == 0),
+            name="Saldo Negativo",
+            legendgroup="neg",
+            hoverinfo="skip",
+        ))
+
+    # Invisible hover line carrying the actual saldo value
+    fig.add_trace(go.Scatter(
+        x=x,
+        y=np.clip(y, -band_h, band_h),
+        mode="lines",
+        line=dict(color="rgba(0,0,0,0)", width=0),
+        customdata=y,
+        hovertemplate="<b>%{x|%b %Y}</b><br>Saldo: %{customdata:+.0f}<extra></extra>",
+        showlegend=False,
+    ))
+
+    # Zero baseline
+    fig.add_hline(y=0, line_color="rgba(128,128,128,0.5)", line_width=1)
+
+    # Fold-line guides at each band boundary
+    for i in range(1, band_count):
+        boundary = i * band_h
+        fig.add_hline(
+            y=boundary,
+            line_dash="dot",
+            line_color="rgba(0,111,161,0.35)",
+            line_width=1,
+        )
+        fig.add_hline(
+            y=-boundary,
+            line_dash="dot",
+            line_color="rgba(15,81,110,0.35)",
+            line_width=1,
+        )
+
+    fig.update_yaxes(
+        range=[-band_h, band_h],
+        tickformat="+.0f",
+        title_text="Saldo (dobrado)",
+    )
+    fig.update_xaxes(title_text="Data")
+
+    return customize_fig(fig)
+
+
 def render(df_filtered, month_order, render_kpi, customize_fig):
-    # TAB 4: FLUXO DE ENTRADA E SAÍDA
     st.markdown("### Fluxo de entrada e saída")
-    st.markdown("*Monitoramento do volume de novas admissões (entradas) em contrapartida aos desligamentos (saídas) dos programas.*")
+    st.markdown(
+        "*Monitoramento do volume de novas admissões (entradas) em contrapartida "
+        "aos desligamentos (saídas) dos programas.*"
+    )
 
     df_flow = df_filtered[
         (df_filtered["area"] == "desdobramentos tecnicos") &
@@ -16,13 +112,12 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
         index="data",
         columns="tipo",
         values="valor",
-        aggfunc="sum"
+        aggfunc="sum",
     ).reset_index()
 
     col_in = "Novos ingressos"
     col_out = "Desligamentos"
 
-    # Check column presence
     if col_in not in df_flow_pivot.columns:
         df_flow_pivot[col_in] = 0.0
     if col_out not in df_flow_pivot.columns:
@@ -34,7 +129,6 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
     total_out = df_flow_pivot[col_out].sum()
     net_flow = total_in - total_out
 
-    # Render Metrics
     m1, m2, m3 = st.columns(3)
     with m1:
         render_kpi("Novos Ingressos (Entradas)", f"{total_in:,.0f}", "Total de novos atendidos", "up")
@@ -42,81 +136,24 @@ def render(df_filtered, month_order, render_kpi, customize_fig):
         render_kpi("Desligamentos (Saídas)", f"{total_out:,.0f}", "Total de desligados", "down")
     with m3:
         trend_direction = "up" if net_flow >= 0 else "down"
-        trend_label = f"{'Saldo Positivo' if net_flow >= 0 else 'Saldo Negativo'}"
+        trend_label = "Saldo Positivo" if net_flow >= 0 else "Saldo Negativo"
         render_kpi("Fluxo Líquido de Atendidos", f"{net_flow:+,.0f}", trend_label, trend_direction)
 
     st.markdown("---")
 
-    c1, c2 = st.columns(2)
-    with c1:
-        fig_flow_trend = px.line(
-            df_flow_pivot,
-            x="data",
-            y=[col_in, col_out],
-            labels={"data": "Data", "value": "Quantidade", "variable": "Fluxo"},
-            # title="Fluxo Temporal: Novos Ingressos vs. Desligamentos",
-            color_discrete_map={
-                col_in: "#0f516e",
-                col_out: "#006fa1"
-            }
-        )
-        new_names_flow = {col_in: "Novos Ingressos (Entradas)", col_out: "Desligamentos (Saídas)"}
-        fig_flow_trend.for_each_trace(lambda t: t.update(name=new_names_flow.get(t.name, t.name)))
-        fig_flow_trend = customize_fig(fig_flow_trend)
-        st.plotly_chart(fig_flow_trend, width='stretch')
+    st.markdown(
+        "<p style='font-size:0.78rem;color:#888;margin:0 0 6px 0;'>"
+        "Saldo líquido mensal (Ingressos − Desligamentos). "
+        "Bandas dobradas sobre o mesmo eixo: azul claro = saldo positivo, "
+        "azul escuro = saldo negativo. Linhas pontilhadas marcam os limiares de dobramento.</em></p>",
+        unsafe_allow_html=True,
+    )
 
-    with c2:
-        df_flow_pivot["Saldo Líquido"] = df_flow_pivot[col_in] - df_flow_pivot[col_out]
-        df_flow_pivot["Tipo de Saldo"] = df_flow_pivot["Saldo Líquido"].apply(lambda x: "Positivo" if x >= 0 else "Negativo")
-        fig_net_flow = px.bar(
-            df_flow_pivot,
-            x="data",
-            y="Saldo Líquido",
-            color="Tipo de Saldo",
-            color_discrete_map={"Positivo": "#006fa1", "Negativo": "#0f516e"},
-            # title="Saldo Líquido Mensal (Ingressos - Desligamentos)",
-            labels={"Saldo Líquido": "Saldo de Atendidos"}
-        )
-        fig_net_flow = customize_fig(fig_net_flow)
-        st.plotly_chart(fig_net_flow, width='stretch')
+    df_flow_pivot["Saldo Líquido"] = df_flow_pivot[col_in] - df_flow_pivot[col_out]
 
-    # st.markdown("---")
-
-    # # Seasonality Analysis
-    # st.markdown("### Análise de Sazonalidade Histórica")
-    # st.markdown("*Média histórica de ingressos e saídas por mês do ano. Auxilia na alocação de infraestrutura e equipe.*")
-
-    # df_flow["mes_idx"] = df_flow["mes"].map({m: i for i, m in enumerate(month_order)})
-    # df_season = df_flow.groupby(["mes_idx", "mes", "tipo"])["valor"].mean().reset_index()
-    # df_season = df_season.sort_values("mes_idx")
-
-    # fig_season = px.bar(
-    #     df_season,
-    #     x="mes",
-    #     y="valor",
-    #     color="tipo",
-    #     barmode="group",
-    #     color_discrete_map={
-    #         col_in: "#0f516e",
-    #         col_out: "#006fa1"
-    #     },
-    #     labels={"valor": "Média Histórica", "mes": "Mês do Ano", "tipo": "Categoria"},
-    #     # title="Sazonalidade: Média de Entradas e Saídas por Mês",
-    #     category_orders={"mes": month_order}
-    # )
-    # # Customize names
-    # fig_season.for_each_trace(lambda t: t.update(name="Novos Ingressos (Entradas)" if t.name == col_in else "Desligamentos (Saídas)"))
-    # fig_season = customize_fig(fig_season, hovermode="x unified")
-    # st.plotly_chart(fig_season, width='stretch')
-
-    # st.markdown(
-    #     """
-    #     <div class="info-box">
-    #         <div class="info-box-title"> Aplicação Prática no Planejamento de Vagas e Infraestrutura</div>
-    #         <div class="info-box-content", style="color: black;">
-    #             Texto descritivo
-    #         </div>
-    #     </div>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
+    fig_horizon = _horizon_chart(
+        x=df_flow_pivot["data"].values,
+        y=df_flow_pivot["Saldo Líquido"].values,
+        customize_fig=customize_fig,
+    )
+    st.plotly_chart(fig_horizon, width="stretch")
