@@ -103,19 +103,6 @@ def _render_area_charts(df_area, meta, customize_fig):
         fig_rank = customize_fig(fig_rank, hovermode="y unified")
         st.plotly_chart(fig_rank, width="stretch")
 
-    fig_box = px.box(
-        df_area,
-        x="display_label",
-        y="valor",
-        color="display_label",
-        color_discrete_map=color_map,
-        labels={"display_label": "Categoria", "valor": "Valor Mensal"},
-        points="outliers",
-    )
-    fig_box.update_layout(showlegend=False, xaxis_tickangle=-28)
-    fig_box = customize_fig(fig_box, hovermode="closest")
-    st.plotly_chart(fig_box, width="stretch")
-
 
 
 
